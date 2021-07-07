@@ -42,6 +42,11 @@ func Error(msg string, err error, tags ...zap.Field) {
 	log.Sync()
 }
 
+func Fatal(msg string, tags ...zap.Field) {
+	log.Fatal(msg, tags...)
+	log.Sync()
+}
+
 func GetLogger() *zap.Logger {
 	return log
 }
