@@ -1,13 +1,18 @@
 package logger
 
 import (
+	"fmt"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
 var (
-	log *zap.Logger
+	log = logger{}
 )
+
+type logger struct {
+	l *zap.Logger
+}
 
 func init() {
 	logConfig := zap.Config{
@@ -25,29 +30,35 @@ func init() {
 	}
 
 	var err error
-
-	if log, err = logConfig.Build(); err != nil {
+	var l *zap.Logger
+	if l, err = logConfig.Build(); err != nil {
 		panic(err)
 	}
+	log.l = l
 }
 
 func Info(msg string, tags ...zap.Field) {
-	log.Info(msg, tags...)
-	log.Sync()
+	log.l.Info(msg, tags...)
+	log.l.Sync()
 }
 
 func Error(msg string, err error, tags ...zap.Field) {
 	tags = append(tags, zap.Error(err))
-	log.Error(msg, tags...)
-	log.Sync()
+	log.l.Error(msg, tags...)
+	log.l.Sync()
 }
 
 func Fatal(msg string, err error, tags ...zap.Field) {
 	tags = append(tags, zap.Error(err))
-	log.Fatal(msg, tags...)
-	log.Sync()
+	log.l.Fatal(msg, tags...)
+	log.l.Sync()
 }
 
-func GetLogger() *zap.Logger {
-	return log
+func Printf(format string, v ...interface{}) {
+	log.l.Info(fmt.Sprintf(format, v...))
+	log.l.Sync()
+}
+
+func GetLogger() *logger {
+	return &log
 }
