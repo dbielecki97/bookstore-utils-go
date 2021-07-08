@@ -54,9 +54,9 @@ func Fatal(msg string, err error, tags ...zap.Field) {
 	log.l.Sync()
 }
 
-func Printf(format string, v ...interface{}) {
-	log.l.Info(fmt.Sprintf(format, v...))
-	log.l.Sync()
+func (l *logger) Printf(format string, v ...interface{}) {
+	l.l.Info(fmt.Sprintf(format, v...))
+	l.l.Sync()
 }
 
 func GetLogger() *logger {
