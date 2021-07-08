@@ -42,7 +42,8 @@ func Error(msg string, err error, tags ...zap.Field) {
 	log.Sync()
 }
 
-func Fatal(msg string, tags ...zap.Field) {
+func Fatal(msg string, err error, tags ...zap.Field) {
+	tags = append(tags, zap.Error(err))
 	log.Fatal(msg, tags...)
 	log.Sync()
 }
