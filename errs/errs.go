@@ -1,4 +1,4 @@
-package errors
+package errs
 
 import (
 	"net/http"
@@ -11,7 +11,7 @@ type RestErr struct {
 	Causes     []interface{} `json:"causes,omitempty"`
 }
 
-func NewBadRequestError(message string) *RestErr {
+func NewBadRequestErr(message string) *RestErr {
 	return &RestErr{
 		Message:    message,
 		StatusCode: http.StatusBadRequest,
@@ -19,7 +19,7 @@ func NewBadRequestError(message string) *RestErr {
 	}
 }
 
-func NewInternalServerError(message string, err error) *RestErr {
+func NewInternalServerErr(message string, err error) *RestErr {
 	r := &RestErr{
 		Message:    message,
 		StatusCode: http.StatusInternalServerError,
@@ -32,7 +32,7 @@ func NewInternalServerError(message string, err error) *RestErr {
 	return r
 }
 
-func NewNotFoundError(message string) *RestErr {
+func NewNotFoundErr(message string) *RestErr {
 	return &RestErr{
 		Message:    message,
 		StatusCode: http.StatusNotFound,
@@ -40,7 +40,7 @@ func NewNotFoundError(message string) *RestErr {
 	}
 }
 
-func NewAuthenticationError(message string) *RestErr {
+func NewAuthenticationErr(message string) *RestErr {
 	return &RestErr{
 		Message:    message,
 		StatusCode: http.StatusUnauthorized,
@@ -48,7 +48,7 @@ func NewAuthenticationError(message string) *RestErr {
 	}
 }
 
-func NewAuthorizationError(message string) *RestErr {
+func NewAuthorizationErr(message string) *RestErr {
 	return &RestErr{
 		Message:    message,
 		StatusCode: http.StatusForbidden,
