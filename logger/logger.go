@@ -38,12 +38,12 @@ func init() {
 			EncodeTime:   zapcore.ISO8601TimeEncoder,
 			EncodeLevel:  zapcore.LowercaseLevelEncoder,
 			EncodeCaller: zapcore.ShortCallerEncoder,
+			CallerKey:    "caller",
 		},
 	}
-
 	var err error
 	var l *zap.Logger
-	if l, err = logConfig.Build(); err != nil {
+	if l, err = logConfig.Build(zap.AddCallerSkip(1)); err != nil {
 		panic(err)
 	}
 	log.l = l
