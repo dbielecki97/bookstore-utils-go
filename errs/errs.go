@@ -1,61 +1,94 @@
 package errs
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
 )
 
-type RestErr struct {
-	Message    string        `json:"message,omitempty"`
-	StatusCode int           `json:"code,omitempty"`
-	Error      string        `json:"error,omitempty"`
-	Causes     []interface{} `json:"causes,omitempty"`
+type RestErr interface {
+	Message() string
+	StatusCode() interface{}
+	Err() string
+	Causes() []interface{}
 }
 
-func NewRestErr(message string, statusCode int, error string, causes []interface{}) *RestErr {
-	return &RestErr{Message: message, StatusCode: statusCode, Error: error, Causes: causes}
+type restErr struct {
+	message    string        `json:"message,omitempty"`
+	statusCode int           `json:"code,omitempty"`
+	err        string        `json:"error,omitempty"`
+	causes     []interface{} `json:"causes,omitempty"`
 }
 
-func NewBadRequestErr(message string) *RestErr {
-	return &RestErr{
-		Message:    message,
-		StatusCode: http.StatusBadRequest,
-		Error:      "bad_request",
+func (e restErr) Message() string {
+	return e.message
+}
+
+func (e restErr) StatusCode() interface{} {
+	return e.statusCode
+}
+
+func (e restErr) Err() string {
+	return e.err
+}
+
+func (e restErr) Causes() []interface{} {
+	return e.causes
+}
+
+func (e restErr) Error() string {
+	return fmt.Sprintf("message: %s - status: %d - error: %s - causes: [ %v ]", e.message, e.statusCode, e.err, e.causes)
+}
+
+func NewError(msg string) error {
+	return errors.New(msg)
+}
+
+func NewRestErr(message string, statusCode int, error string, causes []interface{}) RestErr {
+	return &restErr{message: message, statusCode: statusCode, err: error, causes: causes}
+}
+
+func NewBadRequestErr(message string) RestErr {
+	return &restErr{
+		message:    message,
+		statusCode: http.StatusBadRequest,
+		err:        "bad_request",
 	}
 }
 
-func NewInternalServerErr(message string, err error) *RestErr {
-	r := &RestErr{
-		Message:    message,
-		StatusCode: http.StatusInternalServerError,
-		Error:      "internal_server_error",
-		Causes:     []interface{}{},
+func NewInternalServerErr(message string, err error) RestErr {
+	r := &restErr{
+		message:    message,
+		statusCode: http.StatusInternalServerError,
+		err:        "internal_server_error",
+		causes:     []interface{}{},
 	}
 	if err != nil {
-		r.Causes = append(r.Causes, err.Error())
+		r.causes = append(r.causes, err.Error())
 	}
 	return r
 }
 
-func NewNotFoundErr(message string) *RestErr {
-	return &RestErr{
-		Message:    message,
-		StatusCode: http.StatusNotFound,
-		Error:      "not_found",
+func NewNotFoundErr(message string) RestErr {
+	return &restErr{
+		message:    message,
+		statusCode: http.StatusNotFound,
+		err:        "not_found",
 	}
 }
 
-func NewAuthenticationErr(message string) *RestErr {
-	return &RestErr{
-		Message:    message,
-		StatusCode: http.StatusUnauthorized,
-		Error:      "unauthorized",
+func NewAuthenticationErr(message string) RestErr {
+	return &restErr{
+		message:    message,
+		statusCode: http.StatusUnauthorized,
+		err:        "unauthorized",
 	}
 }
 
-func NewAuthorizationErr(message string) *RestErr {
-	return &RestErr{
-		Message:    message,
-		StatusCode: http.StatusForbidden,
-		Error:      "forbidden",
+func NewAuthorizationErr(message string) RestErr {
+	return &restErr{
+		message:    message,
+		statusCode: http.StatusForbidden,
+		err:        "forbidden",
 	}
 }

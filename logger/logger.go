@@ -21,7 +21,7 @@ type logger struct {
 	l *zap.Logger
 }
 
-type BookstoreLogger interface {
+type bookstoreLogger interface {
 	Printf(string, ...interface{})
 	Print(v ...interface{})
 }
@@ -99,6 +99,6 @@ func (l *logger) Print(v ...interface{}) {
 	l.l.Sync()
 }
 
-func GetLogger() BookstoreLogger {
+func GetLogger() bookstoreLogger {
 	return &log
 }
