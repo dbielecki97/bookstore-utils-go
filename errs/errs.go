@@ -8,7 +8,7 @@ import (
 
 type RestErr interface {
 	Message() string
-	StatusCode() interface{}
+	StatusCode() int
 	Err() string
 	Causes() []interface{}
 }
@@ -24,7 +24,7 @@ func (e restErr) Message() string {
 	return e.message
 }
 
-func (e restErr) StatusCode() interface{} {
+func (e restErr) StatusCode() int {
 	return e.statusCode
 }
 
