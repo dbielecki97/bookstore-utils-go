@@ -14,31 +14,31 @@ type RestErr interface {
 	Causes() []string
 }
 
-type restErr struct {
+type Err struct {
 	Msg         string   `json:"message,omitempty"`
 	Code        int      `json:"code,omitempty"`
 	ErrMessage  string   `json:"error,omitempty"`
 	ErrorCauses []string `json:"causes,omitempty"`
 }
 
-func (e restErr) Message() string {
+func (e Err) Message() string {
 	return e.Msg
 }
 
-func (e restErr) StatusCode() int {
+func (e Err) StatusCode() int {
 	return e.Code
 }
 
-func (e restErr) Err() string {
+func (e Err) Err() string {
 	return e.ErrMessage
 }
 
-func (e restErr) Causes() []string {
+func (e Err) Causes() []string {
 	return e.ErrorCauses
 }
 
 func FromBytes(errorBytes []byte) (RestErr, error) {
-	var r restErr
+	var r Err
 	err := json.Unmarshal(errorBytes, &r)
 	if err != nil {
 		return nil, err
@@ -46,7 +46,7 @@ func FromBytes(errorBytes []byte) (RestErr, error) {
 	return r, nil
 }
 
-func (e restErr) Error() string {
+func (e Err) Error() string {
 	return fmt.Sprintf("message: %s - status: %d - error: %s - causes: [ %v ]", e.Msg, e.Code, e.ErrMessage, e.ErrorCauses)
 }
 
@@ -55,11 +55,11 @@ func NewError(msg string) error {
 }
 
 func NewRestErr(message string, statusCode int, error string, causes []string) RestErr {
-	return &restErr{Msg: message, Code: statusCode, ErrMessage: error, ErrorCauses: causes}
+	return &Err{Msg: message, Code: statusCode, ErrMessage: error, ErrorCauses: causes}
 }
 
 func NewBadRequestErr(message string) RestErr {
-	return &restErr{
+	return &Err{
 		Msg:        message,
 		Code:       http.StatusBadRequest,
 		ErrMessage: "bad_request",
@@ -67,7 +67,7 @@ func NewBadRequestErr(message string) RestErr {
 }
 
 func NewInternalServerErr(message string, err error) RestErr {
-	r := &restErr{
+	r := &Err{
 		Msg:         message,
 		Code:        http.StatusInternalServerError,
 		ErrMessage:  "internal_server_error",
@@ -80,7 +80,7 @@ func NewInternalServerErr(message string, err error) RestErr {
 }
 
 func NewNotFoundErr(message string) RestErr {
-	return &restErr{
+	return &Err{
 		Msg:        message,
 		Code:       http.StatusNotFound,
 		ErrMessage: "not_found",
@@ -88,7 +88,7 @@ func NewNotFoundErr(message string) RestErr {
 }
 
 func NewAuthenticationErr(message string) RestErr {
-	return &restErr{
+	return &Err{
 		Msg:        message,
 		Code:       http.StatusUnauthorized,
 		ErrMessage: "unauthorized",
@@ -96,7 +96,7 @@ func NewAuthenticationErr(message string) RestErr {
 }
 
 func NewAuthorizationErr(message string) RestErr {
-	return &restErr{
+	return &Err{
 		Msg:        message,
 		Code:       http.StatusForbidden,
 		ErrMessage: "forbidden",
