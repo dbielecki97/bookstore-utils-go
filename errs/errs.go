@@ -11,14 +11,14 @@ type RestErr interface {
 	Message() string
 	StatusCode() int
 	Err() string
-	Causes() []interface{}
+	Causes() []string
 }
 
 type restErr struct {
-	Msg         string        `json:"message,omitempty"`
-	Code        int           `json:"code,omitempty"`
-	ErrMessage  string        `json:"error,omitempty"`
-	ErrorCauses []interface{} `json:"causes,omitempty"`
+	Msg         string   `json:"message,omitempty"`
+	Code        int      `json:"code,omitempty"`
+	ErrMessage  string   `json:"error,omitempty"`
+	ErrorCauses []string `json:"causes,omitempty"`
 }
 
 func (e restErr) Message() string {
@@ -33,7 +33,7 @@ func (e restErr) Err() string {
 	return e.ErrMessage
 }
 
-func (e restErr) Causes() []interface{} {
+func (e restErr) Causes() []string {
 	return e.ErrorCauses
 }
 
@@ -54,7 +54,7 @@ func NewError(msg string) error {
 	return errors.New(msg)
 }
 
-func NewRestErr(message string, statusCode int, error string, causes []interface{}) RestErr {
+func NewRestErr(message string, statusCode int, error string, causes []string) RestErr {
 	return &restErr{Msg: message, Code: statusCode, ErrMessage: error, ErrorCauses: causes}
 }
 
@@ -71,7 +71,7 @@ func NewInternalServerErr(message string, err error) RestErr {
 		Msg:         message,
 		Code:        http.StatusInternalServerError,
 		ErrMessage:  "internal_server_error",
-		ErrorCauses: []interface{}{},
+		ErrorCauses: []string{},
 	}
 	if err != nil {
 		r.ErrorCauses = append(r.ErrorCauses, err.Error())
